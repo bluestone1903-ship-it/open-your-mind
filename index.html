@@ -946,47 +946,6 @@ if (mainVideo) {
   });
 
 }
-const mainVideo =
-  document.getElementById("mainVideo");
-
-if (mainVideo) {
-  mainVideo.src = randomVideo;
-
-  mainVideo.addEventListener("ended", () => {
-    location.reload();
-  });
-
-}
-const randomVideo =
-  videos[Math.floor(Math.random() * videos.length)];
-
-const mainVideo =
-  document.getElementById("mainVideo");
-
-if (mainVideo) {
-  mainVideo.src = randomVideo;
-}
-let selectedVideo = "music/free.mp4";
-
-if (Math.random() < 0.5) {
-
-} else {
-  const others = [
-    "music/1.mp4",
-    "music/2.mp4",
-    "music/3.mp4"
-  ];
-
-  selectedVideo =
-    others[Math.floor(Math.random() * others.length)];
-}
-
-const mainVideo =
-  document.getElementById("mainVideo");
-
-if(mainVideo){
-  mainVideo.src = selectedVideo;
-}
 
     const patterns = {
       synth: [261.63, 329.63, 392, 523.25, 392, 329.63],
