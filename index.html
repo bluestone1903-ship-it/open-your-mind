@@ -651,7 +651,6 @@
     controls
     autoplay
     muted
-    loop
     playsinline
     style="width:100%;height:100%;object-fit:cover;">
       <source src="video/main.mp4" type="video/mp4">
@@ -818,7 +817,7 @@
           </div>
         </div>
         <div class="platform-grid">
-           <a class="platform ready" data-link="FLO" href="https://www.music-flo.com/detail/artist/413979464/track?sortType=POPULARITY&roleType=ALL" target="_blank" rel="noopener noreferrer">YouTube<br>채널 보기</a>
+           <a class="platform ready" data-link="FLO" href="https://www.music-flo.com/detail/artist/413979464/track?sortType=POPULARITY&roleType=ALL" target="_blank" rel="noopener noreferrer"><color="blue" FLO></color><br>채널 보기</a>
           <div class="platform">Melon<br>준비 중</div>
           <a class="platform ready" data-link="Spotify" href="https://open.spotify.com/artist/6shAr8RyTpoIqB4VWovwhp?si=p8LVCYSFRa-ImPd_HJvj5A
 /" target="_blank" rel="noopener noreferrer">Sotify<br>바로가기</a>
@@ -901,6 +900,29 @@
         wave.appendChild(bar);
       }
     });
+
+    const videos = [
+  "video/main.mp4",
+  "music/1.mp4",
+  "music/2.mp4",
+  "music/3.mp4"
+];
+
+const mainVideo = document.getElementById("mainVideo");
+
+if (mainVideo) {
+  function playRandomVideo() {
+    const randomVideo = videos[Math.floor(Math.random() * videos.length)];
+    mainVideo.src = randomVideo;
+    mainVideo.play().catch(() => {});
+  }
+
+  playRandomVideo();
+
+  mainVideo.addEventListener("ended", () => {
+    playRandomVideo();
+  });
+}
 
     const nowPlaying = document.getElementById("nowPlaying");
     const audioPlayer = document.getElementById("audioPlayer");
