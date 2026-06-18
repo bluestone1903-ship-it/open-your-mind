@@ -1,4 +1,2 @@
-mkdir -p video
-git mv 2.mp4 video/2.mp4
-git commit -m "Move 2.mp4 to video folder"
-git push
+move 1.mp4 to video folder
+Commit directly to the main branch
