@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Open Your Mind 관리자 편집기</title>
+  <script src="site-content.js"></script>
+  <style>
+    :root {
+      --bg: #111312;
+      --panel: #181b1a;
+      --text: #f4f0e7;
+      --muted: #a9b4ae;
+      --line: #313935;
+      --accent: #f0b45f;
+      --teal: #5ac8bd;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    main {
+      width: min(980px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .panel {
+      margin-top: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #101312;
+      color: var(--text);
+      padding: 11px 12px;
+      outline: 0;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    .track {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button, a.button {
+      border: 0;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #17120b;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    button.secondary, a.button.secondary {
+      background: var(--teal);
+      color: #071211;
+    }
+
+    .note {
+      padding: 12px;
+      border: 1px solid rgba(90,200,189,.4);
+      border-radius: 8px;
+      background: rgba(90,200,189,.08);
+      color: #dff8f5;
+    }
+
+    @media (max-width: 720px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>관리자 편집기</h1>
+    <p>이 페이지는 내 컴퓨터에서 홈페이지 문구와 링크를 쉽게 바꾸기 위한 로컬 편집기입니다. 저장하면 `site-content.js` 파일이 만들어지고, 그 파일을 GitHub에 올리면 홈페이지에 반영됩니다.</p>
+
+    <section class="panel">
+      <h2>기본 정보</h2>
+      <div class="grid">
+        <label>사이트 이름
+          <input id="brandName">
+        </label>
+        <label>작은 설명
+          <input id="brandSubtitle">
+        </label>
+        <label>YouTube 링크
+          <input id="youtubeUrl">
+        </label>
+        <label>Instagram 링크
+          <input id="instagramUrl">
+        </label>
+        <label>무료 음악 파일 경로
+          <input id="freeTrackPath">
+        </label>
+        <label>첫 화면 작은 문구
+          <input id="heroEyebrow">
+        </label>
+      </div>
+      <label style="margin-top: 14px;">첫 화면 제목
+        <input id="heroTitle">
+      </label>
+      <label style="margin-top: 14px;">첫 화면 설명
+        <textarea id="heroText"></textarea>
+      </label>
+    </section>
+
+    <section class="panel">
+      <h2>곡 정보</h2>
+      <div id="tracks"></div>
+    </section>
+
+    <section class="panel">
+      <div class="note">
+        저장 후 GitHub 저장소에 `site-content.js`를 다시 업로드하면 공개 홈페이지가 바뀝니다. `index.html`은 매번 다시 올리지 않아도 됩니다.
+      </div>
+      <div class="actions">
+        <button type="button" id="downloadButton">site-content.js 저장</button>
+        <a class="button secondary" href="index.html" target="_blank" rel="noopener noreferrer">홈페이지 미리보기</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const content = JSON.parse(JSON.stringify(window.SITE_CONTENT || {}));
+    const fields = [
+      "brandName",
+      "brandSubtitle",
+      "youtubeUrl",
+      "instagramUrl",
+      "freeTrackPath",
+      "heroEyebrow",
+      "heroTitle",
+      "heroText"
+    ];
+
+    fields.forEach((field) => {
+      document.getElementById(field).value = content[field] || "";
+    });
+
+    const tracksRoot = document.getElementById("tracks");
+    content.tracks = content.tracks || [];
+    content.tracks.forEach((track, index) => {
+      const row = document.createElement("div");
+      row.className = "track grid";
+      row.innerHTML = `
+        <label>곡 ${index + 1} 제목
+          <input data-track="${index}" data-field="title">
+        </label>
+        <label>곡 ${index + 1} 가격
+          <input data-track="${index}" data-field="price" type="number">
+        </label>
+        <label>곡 ${index + 1} 스타일
+          <input data-track="${index}" data-field="style">
+        </label>
+        <label>곡 ${index + 1} 설명
+          <input data-track="${index}" data-field="meta">
+        </label>
+      `;
+      tracksRoot.appendChild(row);
+      row.querySelectorAll("input").forEach((input) => {
+        input.value = track[input.dataset.field] || "";
+      });
+    });
+
+    function collectContent() {
+      const next = {};
+      fields.forEach((field) => {
+        next[field] = document.getElementById(field).value.trim();
+      });
+      next.tracks = content.tracks.map((track, index) => {
+        const nextTrack = {};
+        document.querySelectorAll(`[data-track="${index}"]`).forEach((input) => {
+          nextTrack[input.dataset.field] = input.dataset.field === "price" ? Number(input.value) : input.value.trim();
+        });
+        return nextTrack;
+      });
+      return next;
+    }
+
+    document.getElementById("downloadButton").addEventListener("click", () => {
+      const next = collectContent();
+      const fileText = `window.SITE_CONTENT = ${JSON.stringify(next, null, 2)};\n`;
+      const blob = new Blob([fileText], { type: "text/javascript" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "site-content.js";
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+  </script>
+</body>
+</html>

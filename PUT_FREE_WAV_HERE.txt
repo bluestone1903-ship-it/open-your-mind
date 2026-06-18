@@ -1,0 +1,5 @@
+Put your free listening file here:
+
+music/free.wav
+
+WAV can work for a short demo, but MP3 is usually better for public websites because it is smaller.

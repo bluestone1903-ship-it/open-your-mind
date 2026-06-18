@@ -480,11 +480,12 @@
 
     .platform-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 10px;
     }
 
     .platform {
+      display: block;
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 12px;
@@ -492,12 +493,19 @@
       color: var(--muted);
       text-align: center;
       font-size: 13px;
+      transition: border-color .2s ease, background .2s ease, color .2s ease;
     }
 
     .platform.ready {
       color: var(--text);
       border-color: rgba(90,200,189,.45);
       background: rgba(90,200,189,.08);
+    }
+
+    .platform.ready:hover {
+      color: #071211;
+      border-color: var(--teal);
+      background: var(--teal);
     }
 
     .stats {
@@ -604,8 +612,8 @@
         <a href="#dashboard">관리자</a>
       </nav>
       <div class="sidebar-card">
-        <strong>운영 구조</strong>
-        <p>아티스트가 음원, 설명, 사진, 뮤비 링크를 올리고 팬은 홈페이지 안에서 바로 음악을 들을 수 있습니다.</p>
+        <strong>공식 링크</strong>
+        <p><a data-link="youtube" href="https://www.youtube.com/@%EC%98%A4%ED%94%88%EC%9C%A0%EC%96%B4%EB%A7%88%EC%9D%B8%EB%93%9C/" target="_blank" rel="noopener noreferrer">YouTube</a> · <a data-link="instagram" href="https://www.instagram.com/blueskyt_777/" target="_blank" rel="noopener noreferrer">Instagram</a></p>
       </div>
     </aside>
 
@@ -726,7 +734,7 @@
               <textarea>밤의 도시와 아날로그 신스 사운드를 담은 싱글. 방문자가 홈페이지에서 무료로 들어보고 구매 테스트까지 할 수 있습니다.</textarea>
             </label>
             <label>뮤비 또는 관련 영상 링크
-              <input value="https://youtube.com/watch?v=sample">
+              <input value="https://www.youtube.com/@%EC%98%A4%ED%94%88%EC%9C%A0%EC%96%B4%EB%A7%88%EC%9D%B8%EB%93%9C/">
             </label>
           </form>
 
@@ -749,15 +757,15 @@
         <div class="section-head">
           <div>
             <h2>음악 감상</h2>
-            <p>무료 재생을 중심에 두고, 후원이나 구매는 나중에 자연스럽게 붙일 수 있게 남겨둔 구조입니다.</p>
+            <p>GitHub에 `music/free.wav`를 올리면 무료 재생 버튼이 그 파일을 먼저 재생합니다. 파일이 없으면 임시 데모 사운드가 재생됩니다.</p>
           </div>
         </div>
 
         <div class="workspace">
           <div class="panel player-box">
             <h3>현재 재생</h3>
-            <div class="now-playing" id="nowPlaying">아직 선택한 곡이 없습니다. 위의 무료 재생 버튼을 눌러보세요.</div>
-            <button class="btn primary" type="button" id="playDemoButton">데모 사운드 재생</button>
+            <div class="now-playing" id="nowPlaying">아직 선택한 곡이 없습니다. GitHub에 music/free.wav를 올린 뒤 무료 재생 버튼을 눌러보세요.</div>
+            <button class="btn primary" type="button" id="playDemoButton">free.wav 재생</button>
             <button class="btn ghost" type="button" id="stopDemoButton">정지</button>
             <label>내 데모 음원 선택
               <input id="localAudio" type="file" accept="audio/*">
@@ -793,7 +801,8 @@
           <div class="platform">Spotify<br>준비 중</div>
           <div class="platform">FLO<br>준비 중</div>
           <div class="platform">Melon<br>준비 중</div>
-          <div class="platform ready">YouTube / 뮤비<br>연결 가능</div>
+          <a class="platform ready" data-link="youtube" href="https://www.youtube.com/@%EC%98%A4%ED%94%88%EC%9C%A0%EC%96%B4%EB%A7%88%EC%9D%B8%EB%93%9C/" target="_blank" rel="noopener noreferrer">YouTube<br>채널 보기</a>
+          <a class="platform ready" data-link="instagram" href="https://www.instagram.com/blueskyt_777/" target="_blank" rel="noopener noreferrer">Instagram<br>바로가기</a>
         </div>
       </section>
 
@@ -818,7 +827,50 @@
     </main>
   </div>
 
+  <script src="site-content.js"></script>
   <script>
+    function applySiteContent() {
+      const content = window.SITE_CONTENT || {};
+      const setText = (selector, value) => {
+        const element = document.querySelector(selector);
+        if (element && value) element.textContent = value;
+      };
+      const setHref = (selector, value) => {
+        const element = document.querySelector(selector);
+        if (element && value) element.href = value;
+      };
+
+      setText(".brand > div:last-child > div", content.brandName);
+      setText(".brand small", content.brandSubtitle);
+      setText(".hero .eyebrow", content.heroEyebrow);
+      setText(".hero h1", content.heroTitle);
+      setText(".hero-copy p", content.heroText);
+      setHref("[data-link='youtube']", content.youtubeUrl);
+      setHref("[data-link='instagram']", content.instagramUrl);
+
+      const youtubeInput = document.querySelector("#upload input[value^='https://www.youtube.com']");
+      if (youtubeInput && content.youtubeUrl) youtubeInput.value = content.youtubeUrl;
+
+      (content.tracks || []).forEach((track, index) => {
+        const card = document.querySelectorAll(".track-card")[index];
+        if (!card) return;
+        const title = card.querySelector(".track-title strong");
+        const price = card.querySelector(".price");
+        const meta = card.querySelector(".meta");
+        const buttons = card.querySelectorAll("[data-track]");
+        if (title && track.title) title.textContent = track.title;
+        if (price && track.price) price.textContent = `₩${Number(track.price).toLocaleString("ko-KR")}`;
+        if (meta && track.meta) meta.textContent = track.meta;
+        buttons.forEach((button) => {
+          if (track.title) button.dataset.track = track.title;
+          if (track.style) button.dataset.style = track.style;
+          if (track.price) button.dataset.price = track.price;
+        });
+      });
+    }
+
+    applySiteContent();
+
     const waves = document.querySelectorAll(".wave");
     waves.forEach((wave, waveIndex) => {
       for (let i = 0; i < 30; i += 1) {
@@ -838,6 +890,7 @@
     const downloadBox = document.getElementById("downloadBox");
     const mp3Download = document.getElementById("mp3Download");
     const wavDownload = document.getElementById("wavDownload");
+    const freeTrackPath = (window.SITE_CONTENT && window.SITE_CONTENT.freeTrackPath) || "music/free.wav";
     let audioContext;
     let activeNodes = [];
     let selectedPurchase = {
@@ -887,9 +940,23 @@
       document.getElementById("checkout").scrollIntoView({ behavior: "smooth" });
     }
 
+    async function playFreeTrack(trackName, style) {
+      stopDemo();
+      audioPlayer.pause();
+      audioPlayer.src = freeTrackPath;
+      try {
+        await audioPlayer.play();
+        nowPlaying.textContent = `${trackName} 파일을 재생 중입니다: ${freeTrackPath}`;
+        document.getElementById("checkout").scrollIntoView({ behavior: "smooth" });
+      } catch (error) {
+        nowPlaying.textContent = `${freeTrackPath} 파일을 아직 찾지 못해서 임시 데모 사운드를 재생합니다. GitHub에 music/free.wav를 올리면 실제 음악으로 바뀝니다.`;
+        playGeneratedDemo(trackName, style);
+      }
+    }
+
     document.querySelectorAll(".listen").forEach((button) => {
       button.addEventListener("click", () => {
-        playGeneratedDemo(button.dataset.track, button.dataset.style);
+        playFreeTrack(button.dataset.track, button.dataset.style);
       });
     });
 
@@ -909,12 +976,12 @@
 
     document.querySelectorAll(".preview").forEach((button) => {
       button.addEventListener("click", () => {
-        playGeneratedDemo(button.dataset.track, button.dataset.style);
+        playFreeTrack(button.dataset.track, button.dataset.style);
       });
     });
 
     document.getElementById("playDemoButton").addEventListener("click", () => {
-      playGeneratedDemo("Midnight Signal", "synth");
+      playFreeTrack("free.mp3", "synth");
     });
 
     document.getElementById("stopDemoButton").addEventListener("click", () => {
