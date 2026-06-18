@@ -651,11 +651,9 @@
     controls
     autoplay
     muted
-    loop
     playsinline
     style="width:100%;height:100%;object-fit:cover;">
-      <source src="video/main.mp4" type="video/mp4">
-      브라우저가 MP4 영상을 지원하지 않습니다.
+            브라우저가 MP4 영상을 지원하지 않습니다.
   </video>
 </div>
 
@@ -928,6 +926,13 @@ const videos = [
 const randomVideo =
   videos[Math.floor(Math.random() * videos.length)];
 
+console.log("선택된 영상:", randomVideo);
+
+const mainVideo = document.getElementById("mainVideo");
+
+if(mainVideo){
+   mainVideo.src = randomVideo;
+}
 const mainVideo =
   document.getElementById("mainVideo");
 
