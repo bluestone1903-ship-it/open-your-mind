@@ -923,15 +923,28 @@ const videos = [
   "music/3.mp4"
 ];
 
-const randomVideo =
-  videos[Math.floor(Math.random() * videos.length)];
-
-console.log("선택된 영상:", randomVideo);
-
 const mainVideo = document.getElementById("mainVideo");
 
-if(mainVideo){
-   mainVideo.src = randomVideo;
+if (mainVideo) {
+
+  function playRandomVideo() {
+
+    const randomVideo =
+      videos[Math.floor(Math.random() * videos.length)];
+
+    console.log("선택된 영상:", randomVideo);
+
+    mainVideo.src = randomVideo;
+
+    mainVideo.play().catch(() => {});
+  }
+
+  playRandomVideo();
+
+  mainVideo.addEventListener("ended", () => {
+    playRandomVideo();
+  });
+
 }
 const mainVideo =
   document.getElementById("mainVideo");
